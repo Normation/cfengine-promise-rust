@@ -1,0 +1,20 @@
+promise agent git
+{
+  interpreter => "/tmp/git";
+  # We ignore it in the module
+  path => "/tmp/git";
+}
+
+body action warn_only
+{
+  action_policy => "warn";
+}
+
+bundle agent main
+{
+  git:
+    "/tmp/masterfiles"
+#      action => warn_only,
+      repo => "https://github.com/cfengine/masterfiles";
+}
+
