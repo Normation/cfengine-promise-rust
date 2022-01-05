@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // SPDX-FileCopyrightText: 2021 Normation SAS
 
-// FIXME do not require log
 use cfengine_promise::{info, ApplyResult, AttributeType, CheckResult, Executor, PromiseType};
 use serde_json::{Map, Value};
 use std::{path::Path, process::Command};

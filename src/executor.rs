@@ -205,7 +205,6 @@ impl Executor {
                 let mut result = promise
                     .check(&req.promiser, &req.attributes)
                     .outcome(is_check_only);
-                // FIXME not the right criteria
                 if !is_check_only && result != EvaluateOutcome::Kept {
                     // Make changes
                     result = promise.apply(&req.promiser, &req.attributes).outcome();

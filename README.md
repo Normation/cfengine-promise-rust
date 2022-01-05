@@ -15,14 +15,14 @@ Design is inspired by the [reference Python and shell implementations](https://g
 
 The main goal is to provide a reliable interface, by checking as much stuff as we can
 (including parameters types, etc) to allow easily implementing safe and fast promise types.
-Note that we do not try to stick to close to the underlying protocol, and prefer a
+Note that we do not try to stick too close to the underlying protocol, and prefer a
 an idiomatic way when possible.
 
 This lib is done with Rudder use cases in mind, so we have a special focus on the audit mode (warn only).
 In this order, we split the *evaluate* step into *check* and *apply*
 to handle warn-only mode at executor level and avoid having to implement it in every promise.
 
-The library is generally build around a trait describing a promise type's interface, and an executor
+The library is built around a trait describing a promise type's interface, and an executor
 that handles the stdin/stdout communication and protocol serialization.
 
 ## Usage
