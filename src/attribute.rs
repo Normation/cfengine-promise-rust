@@ -17,8 +17,8 @@ pub enum AttributeType {
     Data,
     /// Can only be one of the given variant
     StringEnum(Vec<String>),
-    // TODO extend with usual types for config management
     AbsolutePath,
+    // TODO extend with usual types for config management
 }
 
 impl AttributeType {

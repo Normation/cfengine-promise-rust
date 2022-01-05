@@ -65,7 +65,7 @@ pub(crate) enum EvaluateOutcome {
 
 #[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
 
-/// Promise evaluation result
+/// Promise application result
 pub enum ApplyResult {
     /// Satisfied already, no change
     Kept,
@@ -113,7 +113,6 @@ impl ApplyResult {
 ///
 /// Used as audit result if in warn_only
 #[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
-
 pub enum CheckResult {
     /// Satisfied already, no change
     Kept,
@@ -131,7 +130,8 @@ pub enum CheckResult {
 }
 
 impl CheckResult {
-    pub(crate) fn outcome(&self) -> EvaluateOutcome {
+    /// If is_check_only, not kept is logged as error, else as info
+    pub(crate) fn outcome(&self, is_check_only: bool) -> EvaluateOutcome {
         match self {
             CheckResult::Kept => EvaluateOutcome::Kept,
             CheckResult::AlwaysApply => {
@@ -139,7 +139,11 @@ impl CheckResult {
                 EvaluateOutcome::NotKept
             }
             CheckResult::NotKept(e) => {
-                error!("{}", e);
+                if is_check_only {
+                    error!("{}", e);
+                } else {
+                    info!("{}", e);
+                }
                 EvaluateOutcome::NotKept
             }
             CheckResult::Error(e) => {

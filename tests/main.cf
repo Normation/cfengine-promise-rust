@@ -1,7 +1,5 @@
 promise agent git
 {
-  interpreter => "/tmp/git";
-  # We ignore it in the module
   path => "/tmp/git";
 }
 

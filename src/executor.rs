@@ -165,7 +165,6 @@ impl Executor {
         // Now we're all set up, let's run the executor main loop
         loop {
             let line = Self::read_line(&mut input)?;
-
             // Lazily run initializer, in case it is expensive
             if !initialized {
                 match promise.init() {
@@ -200,10 +199,14 @@ impl Executor {
                 )?
             } else if let Ok(req) = serde_json::from_str::<EvaluateRequest>(&line) {
                 set_max_level(req.log_level);
-                let mut result = promise.check(&req.promiser, &req.attributes).outcome();
+                // FIXME fix once implemented
+                let is_check_only = req.attributes.get("action_policy").is_some();
+
+                let mut result = promise
+                    .check(&req.promiser, &req.attributes)
+                    .outcome(is_check_only);
                 // FIXME not the right criteria
-                if req.attributes.get("action_policy").is_none() && result != EvaluateOutcome::Kept
-                {
+                if !is_check_only && result != EvaluateOutcome::Kept {
                     // Make changes
                     result = promise.apply(&req.promiser, &req.attributes).outcome();
                 }
