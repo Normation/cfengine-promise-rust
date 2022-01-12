@@ -165,6 +165,7 @@ impl Executor {
         // Now we're all set up, let's run the executor main loop
         loop {
             let line = Self::read_line(&mut input)?;
+            let line = dbg!(line);
             // Lazily run initializer, in case it is expensive
             if !initialized {
                 match promise.init() {
