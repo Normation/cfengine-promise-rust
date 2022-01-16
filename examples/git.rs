@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // SPDX-FileCopyrightText: 2021 Normation SAS
 
-use cfengine_promise::{info, ApplyResult, AttributeType, CheckResult, Executor, PromiseType};
+use cfengine_promise::{info, ApplyResult, AttributeType, CheckResult, Executor, PromiseType, name, version};
 use serde_json::{Map, Value};
 use std::{path::Path, process::Command};
 
@@ -9,13 +9,8 @@ struct Git {}
 
 /// Implement the promise type
 impl PromiseType for Git {
-    fn name(&self) -> &'static str {
-        "git_promise_module"
-    }
-
-    fn version(&self) -> &'static str {
-        "0.0.1"
-    }
+    name!("git_promise_module");
+    version!("0.0.1");
 
     fn required_attributes(&self) -> Vec<(String, AttributeType)> {
         vec![("repo".to_string(), AttributeType::AbsolutePath)]
@@ -33,6 +28,19 @@ impl PromiseType for Git {
         let folder = Path::new(&promiser);
         // we have checked validity
         let url = attributes.get("repo").unwrap().as_str().unwrap();
+        // let key1 = attributes
+        //     .get("dat")
+        //     .unwrap()
+        //     .as_object()
+        //     .unwrap()
+        //     .get("KEY1")
+        //     .unwrap();
+        // info!("PLOUF: {}", key1);
+        //
+        // let slist = attributes.get("lines").unwrap().as_array().unwrap()[0]
+        //     .as_str()
+        //     .unwrap();
+        // info!("PLOUF: {}", slist);
 
         if folder.exists() {
             return ApplyResult::Kept;

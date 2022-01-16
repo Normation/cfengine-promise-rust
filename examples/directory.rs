@@ -1,20 +1,15 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // SPDX-FileCopyrightText: 2021 Normation SAS
 
-use cfengine_promise::{ApplyResult, AttributeType, CheckResult, Executor, PromiseType};
+use cfengine_promise::{ApplyResult, AttributeType, CheckResult, Executor, PromiseType, name, version};
 use serde_json::{Map, Value};
 use std::{fs, path::Path};
 
 struct Directory {}
 
 impl PromiseType for Directory {
-    fn name(&self) -> &'static str {
-        "directory_module"
-    }
-
-    fn version(&self) -> &'static str {
-        "0.0.1"
-    }
+    name!("directory_module");
+    version!("0.0.1");
 
     fn required_attributes(&self) -> Vec<(String, AttributeType)> {
         vec![(

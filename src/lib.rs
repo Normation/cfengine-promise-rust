@@ -18,7 +18,7 @@
 pub use crate::{
     attribute::AttributeType,
     executor::Executor,
-    protocol::{ApplyResult, CheckResult, ProtocolResult, ValidateResult},
+    protocol::{ApplyResult, CheckResult, Class, ProtocolResult, ValidateResult},
 };
 pub use serde_json::{Map, Value};
 
@@ -28,6 +28,24 @@ mod header;
 #[macro_use]
 pub mod log;
 mod protocol;
+
+#[macro_export]
+macro_rules! name {
+    ($n:literal) => {
+        fn name(&self) -> &'static str {
+            return $n
+        }
+    };
+}
+
+#[macro_export]
+macro_rules! version {
+    ($v:literal) => {
+        fn version(&self) -> &'static str {
+            return $v
+        }
+    };
+}
 
 /// CFEngine promise type
 pub trait PromiseType {
