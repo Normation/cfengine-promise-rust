@@ -4,6 +4,42 @@
 use crate::{error, info, log::LevelFilter};
 use serde::{Deserialize, Serialize};
 use serde_json::{Map, Value};
+use std::path::PathBuf;
+
+const ALLOWED_CHAR_CLASS: &str = "_0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+#[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
+#[serde(transparent)]
+pub struct Class {
+    inner: String,
+}
+
+impl Class {
+    pub fn new<S: Into<String>>(s: S) -> Self {
+        let inner = s.into();
+        for c in inner.chars() {
+            if !ALLOWED_CHAR_CLASS.contains(c) {
+                panic!("Unexpected char in class name: '{}' in {}", c, inner);
+            }
+        }
+        Self { inner }
+    }
+}
+
+#[derive(Debug, PartialEq, Serialize, Deserialize, Clone, Copy)]
+#[serde(rename_all = "lowercase")]
+//#[serde(default)]
+pub(crate) enum ActionPolicy {
+    #[serde(alias = "nop")]
+    Warn,
+    Fix,
+}
+
+impl Default for ActionPolicy {
+    fn default() -> Self {
+        ActionPolicy::Fix
+    }
+}
 
 #[derive(Debug, PartialEq, Serialize, Deserialize, Clone, Copy)]
 #[serde(rename_all = "snake_case")]
@@ -18,7 +54,6 @@ pub(crate) enum ValidateOutcome {
 }
 
 #[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
-
 /// Promise validation result
 pub enum ValidateResult {
     /// Validation successful
@@ -64,7 +99,6 @@ pub(crate) enum EvaluateOutcome {
 }
 
 #[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
-
 /// Promise application result
 pub enum ApplyResult {
     /// Satisfied already, no change
@@ -223,6 +257,10 @@ pub(crate) struct ValidateRequest {
     pub(crate) log_level: LevelFilter,
     pub(crate) promiser: String,
     pub(crate) attributes: Map<String, Value>,
+    pub(crate) promise_type: String,
+    pub(crate) filename: PathBuf,
+    pub(crate) line_number: u16,
+    pub(crate) action_policy: ActionPolicy,
 }
 
 // {"operation": "evaluate_promise", "log_level": "info", "promise_type": "git", "promiser": "/opt/cfengine/masterfiles", "attributes": {"repo": "https://github.com/cfengine/masterfiles"}}
@@ -232,6 +270,10 @@ pub(crate) struct EvaluateRequest {
     pub(crate) log_level: LevelFilter,
     pub(crate) promiser: String,
     pub(crate) attributes: Map<String, Value>,
+    pub(crate) promise_type: String,
+    pub(crate) filename: PathBuf,
+    pub(crate) line_number: u16,
+    pub(crate) action_policy: ActionPolicy,
 }
 
 // {"operation": "terminate", "log_level": "info"}
@@ -269,15 +311,21 @@ pub(crate) struct EvaluateResponse {
     promiser: String,
     attributes: Map<String, Value>,
     result: EvaluateOutcome,
+    result_classes: Vec<Class>,
 }
 
 impl EvaluateResponse {
-    pub(crate) fn new(request: &EvaluateRequest, result: EvaluateOutcome) -> Self {
+    pub(crate) fn new(
+        request: &EvaluateRequest,
+        result: EvaluateOutcome,
+        classes: Vec<Class>,
+    ) -> Self {
         Self {
             operation: EvaluateOperation::EvaluatePromise,
             promiser: request.promiser.clone(),
             result,
             attributes: request.attributes.clone(),
+            result_classes: classes,
         }
     }
 }
@@ -303,8 +351,14 @@ mod tests {
     use super::*;
 
     #[test]
+    #[should_panic]
+    fn it_rejects_wrong_classes() {
+        let _c = Class::new("my class");
+    }
+
+    #[test]
     fn it_parses_requests() {
-        let val = r#"{"attributes":{"repo":"https://github.com/cfengine/masterfiles"},"log_level":"info","operation":"validate_promise","promiser":"/tmp/masterfiles"}"#;
+        let val = r#"{"filename":"/tmp/test.cf","line_number": 42,"promise_type":"git","attributes":{"repo":"https://github.com/cfengine/masterfiles"},"log_level":"info","operation":"validate_promise","promiser":"/tmp/masterfiles"}"#;
 
         let mut attributes = Map::new();
         attributes.insert(
@@ -316,6 +370,10 @@ mod tests {
             log_level: LevelFilter::Info,
             promiser: "/tmp/masterfiles".to_string(),
             attributes,
+            promise_type: "git".to_string(),
+            filename: PathBuf::from("/tmp/test.cf"),
+            line_number: 42,
+            action_policy: ActionPolicy::Fix,
         };
 
         assert_eq!(

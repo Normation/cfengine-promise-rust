@@ -10,9 +10,20 @@ body action warn_only
 
 bundle agent main
 {
+
+
+  vars:
+      "lines" slist => { "hello", "from", "modules" };
+
   git:
     "/tmp/masterfiles"
 #      action => warn_only,
+#      action_policy => "warn",
+      dat => parsejson('{
+        "KEY1": "VALUE1",
+        "KEY2": "VALUE2"
+      }'),
+      lines => @(lines),
       repo => "https://github.com/cfengine/masterfiles";
 }
 

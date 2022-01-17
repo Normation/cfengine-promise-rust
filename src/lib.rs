@@ -53,13 +53,6 @@ pub trait PromiseType {
     fn version(&self) -> &'static str;
     // no protocol versions as it is part of the executor
 
-    /// Executed before any promise
-    ///
-    /// Can be used for set-up tasks
-    fn init(&mut self) -> ProtocolResult {
-        ProtocolResult::Success
-    }
-
     /// List of required attributes with their type
     ///
     /// They will be checked before calling `validate`
@@ -78,6 +71,13 @@ pub trait PromiseType {
     /// dynamic attribute list (depending on OS, etc.)
     fn optional_attributes(&self) -> Vec<(String, AttributeType)> {
         vec![]
+    }
+
+    /// Executed before any promise
+    ///
+    /// Can be used for set-up tasks
+    fn init(&mut self) -> ProtocolResult {
+        ProtocolResult::Success
     }
 
     /// Checks parameter validity

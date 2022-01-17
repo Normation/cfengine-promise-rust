@@ -213,7 +213,7 @@ impl Executor {
                 Self::write_json(
                     &mut output,
                     &mut logger,
-                    EvaluateResponse::new(&req, result),
+                    EvaluateResponse::new(&req, result, vec![]),
                 )?
             } else if let Ok(_req) = serde_json::from_str::<TerminateRequest>(&line) {
                 let result = promise.terminate().outcome();
