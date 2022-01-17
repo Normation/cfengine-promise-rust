@@ -260,7 +260,7 @@ pub(crate) struct ValidateRequest {
     pub(crate) promise_type: String,
     pub(crate) filename: PathBuf,
     pub(crate) line_number: u16,
-    pub(crate) action_policy: ActionPolicy,
+    //pub(crate) action_policy: ActionPolicy,
 }
 
 // {"operation": "evaluate_promise", "log_level": "info", "promise_type": "git", "promiser": "/opt/cfengine/masterfiles", "attributes": {"repo": "https://github.com/cfengine/masterfiles"}}
@@ -273,7 +273,7 @@ pub(crate) struct EvaluateRequest {
     pub(crate) promise_type: String,
     pub(crate) filename: PathBuf,
     pub(crate) line_number: u16,
-    pub(crate) action_policy: ActionPolicy,
+    //pub(crate) action_policy: ActionPolicy,
 }
 
 // {"operation": "terminate", "log_level": "info"}
@@ -373,7 +373,7 @@ mod tests {
             promise_type: "git".to_string(),
             filename: PathBuf::from("/tmp/test.cf"),
             line_number: 42,
-            action_policy: ActionPolicy::Fix,
+            //action_policy: ActionPolicy::Fix,
         };
 
         assert_eq!(
