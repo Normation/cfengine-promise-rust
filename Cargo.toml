@@ -1,9 +1,9 @@
 [package]
-name = "cfengine_promise"
+name = "rudder_resource"
 version = "0.0.1"
 authors = ["Alexis Mousset <alexis.mousset@rudder.io>"]
-edition = "2018"
-description = "A Rust implementation of CFEngine's custom promise types"
+edition = "2021"
+description = "Implementation of a Rudder native resource for CFEngine"
 readme = "README.md"
 repository = "https://github.com/Normation/cfengine-promise-rust"
 license = "GPL-3.0-or-later"

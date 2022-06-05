@@ -1,6 +1,16 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // SPDX-FileCopyrightText: 2021 Normation SAS
 
+use std::{
+    io,
+    io::{BufRead, Lines, Write},
+    str::FromStr,
+};
+
+use anyhow::{anyhow, Error};
+use serde::Serialize;
+use serde_json::{Map, Value};
+
 use crate::{
     attribute::AttributeType,
     header::Header,
@@ -11,14 +21,6 @@ use crate::{
     },
     PromiseType,
 };
-use anyhow::{anyhow, Error};
-use serde::Serialize;
-use serde_json::{Map, Value};
-use std::{
-    io,
-    io::{BufRead, Lines, Write},
-    str::FromStr,
-};
 
 /// Promise executor
 ///
@@ -28,12 +30,16 @@ use std::{
 pub struct Executor {
     /// Part of the executor as it is not a decision that belongs to the promise itself
     ignore_unknown_attributes: bool,
+    // /// Where to store temporary files for the promise
+    // temporary_dir: PathBuf,
+    // /// Unique node identifier
+    // node_id: String,
 }
 
 impl Executor {
     /// Create an executor
     ///
-    /// By default it will fail on unexpected attributes
+    /// By default, it will fail on unexpected attributes
     pub fn new() -> Self {
         Self {
             ignore_unknown_attributes: false,
@@ -116,13 +122,17 @@ impl Executor {
     ) -> Result<(), Error> {
         for (attr, _) in &required {
             if attributes.get(attr).is_none() {
-                anyhow!("Missing required attribute {}", attr);
+                return Err(anyhow!("Missing required attribute {}", attr));
             }
         }
         for (attr, attr_type) in required.iter().chain(optional.iter()) {
             if let Some(value) = attributes.get(attr) {
                 if !attr_type.has_type(value) {
-                    anyhow!("Attribute {} should have {:?} type", attr, attr_type);
+                    return Err(anyhow!(
+                        "Attribute {} should have {:?} type",
+                        attr,
+                        attr_type
+                    ));
                 }
             }
         }
@@ -134,7 +144,7 @@ impl Executor {
                     .map(|(a, _)| a)
                     .all(|a| a != key)
                 {
-                    anyhow!("Unexpected attribute {}", key);
+                    return Err(anyhow!("Unexpected attribute {}", key));
                 }
             }
         }

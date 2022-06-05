@@ -1,8 +1,9 @@
-use serde::{Deserialize, Serialize};
 use std::{
     cmp, fmt, mem,
     sync::atomic::{AtomicUsize, Ordering},
 };
+
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize, Clone, Copy, Eq)]
 #[serde(rename_all = "lowercase")]

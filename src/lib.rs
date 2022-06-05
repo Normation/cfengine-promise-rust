@@ -3,9 +3,9 @@
 
 //! A Rust implementation of CFEngine's custom promise types
 //!
-//! The main goal is to provide a reliable interface, by checking as much elements as we can
-//! (including parameters types, etc) to allow easily implementing safe and fast promise types.
-//! Note that we do not try to stick to close to the underlying protocol, and prefer a
+//! The main goal is to provide a reliable interface, by checking as many elements as we can
+//! (including parameters types, etc.) to allow easily implementing safe and fast promise types.
+//! Note that we do not try to stick to close to the underlying protocol, and prefer
 //! an idiomatic way.
 //!
 //! This lib is done with [Rudder](https://www.rudder.io) use cases in mind, so we have a special focus on the audit mode (warn only).
@@ -15,12 +15,13 @@
 //! The library is generally build around a `PromiseType` trait describing a promise type's interface, and an `Executor`
 //! that handles the stdin/stdout communication and protocol serialization.
 
+pub use serde_json::{Map, Value};
+
 pub use crate::{
     attribute::AttributeType,
     executor::Executor,
     protocol::{ApplyResult, CheckResult, Class, ProtocolResult, ValidateResult},
 };
-pub use serde_json::{Map, Value};
 
 mod attribute;
 mod executor;
@@ -28,6 +29,7 @@ mod header;
 #[macro_use]
 pub mod log;
 mod protocol;
+mod resource;
 
 #[macro_export]
 macro_rules! name {

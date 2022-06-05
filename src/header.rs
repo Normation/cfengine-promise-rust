@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // SPDX-FileCopyrightText: 2021 Normation SAS
 
-use anyhow::{anyhow, Error};
 use std::{fmt, str::FromStr};
+
+use anyhow::{anyhow, Error};
 
 #[derive(Debug, PartialEq, Clone)]
 pub(crate) struct Header {
@@ -61,16 +62,16 @@ impl Header {
     pub(crate) fn compatibility(&self) -> Result<(), Error> {
         // Compatibility checks
         if self.name != "CFEngine" {
-            anyhow!("Unknown agent {}, expecting 'CFEngine'", self.name);
+            return Err(anyhow!("Unknown agent {}, expecting 'CFEngine'", self.name));
         }
         if self.protocol_version != "v1" {
-            anyhow!(
+            return Err(anyhow!(
                 "Incompatible protocol version {}, expecting v1",
                 self.protocol_version
-            );
+            ));
         }
         if !self.flags.is_empty() {
-            anyhow!("Expecting empty flags");
+            return Err(anyhow!("Expecting empty flags"));
         }
         Ok(())
     }

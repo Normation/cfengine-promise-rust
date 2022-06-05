@@ -1,9 +1,12 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // SPDX-FileCopyrightText: 2021 Normation SAS
 
-use cfengine_promise::{ApplyResult, AttributeType, CheckResult, Executor, PromiseType, name, version};
-use serde_json::{Map, Value};
 use std::{fs, path::Path};
+
+use rudder_resource::{
+    name, version, ApplyResult, AttributeType, CheckResult, Executor, PromiseType,
+};
+use serde_json::{Map, Value};
 
 struct Directory {}
 

@@ -1,10 +1,12 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // SPDX-FileCopyrightText: 2021 Normation SAS
 
-use crate::{error, info, log::LevelFilter};
+use std::path::PathBuf;
+
 use serde::{Deserialize, Serialize};
 use serde_json::{Map, Value};
-use std::path::PathBuf;
+
+use crate::{error, info, log::LevelFilter};
 
 const ALLOWED_CHAR_CLASS: &str = "_0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
@@ -377,7 +379,7 @@ mod tests {
         };
 
         assert_eq!(
-            serde_json::from_str::<ValidateRequest>(&val).unwrap(),
+            serde_json::from_str::<ValidateRequest>(val).unwrap(),
             ref_val
         );
     }
