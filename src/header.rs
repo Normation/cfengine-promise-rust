@@ -3,7 +3,7 @@
 
 use std::{fmt, str::FromStr};
 
-use anyhow::{anyhow, Error};
+use anyhow::{bail, Error};
 
 #[derive(Debug, PartialEq, Clone)]
 pub(crate) struct Header {
@@ -38,7 +38,7 @@ impl FromStr for Header {
         let header: Vec<&str> = s.splitn(4, ' ').collect();
 
         if header.len() < 3 {
-            return Err(anyhow!("Incomplete header"));
+            bail!("Incomplete header");
         }
 
         let name = header[0].to_string();
@@ -62,16 +62,16 @@ impl Header {
     pub(crate) fn compatibility(&self) -> Result<(), Error> {
         // Compatibility checks
         if self.name != "CFEngine" {
-            return Err(anyhow!("Unknown agent {}, expecting 'CFEngine'", self.name));
+            bail!("Unknown agent {}, expecting 'CFEngine'", self.name);
         }
         if self.protocol_version != "v1" {
-            return Err(anyhow!(
+            bail!(
                 "Incompatible protocol version {}, expecting v1",
                 self.protocol_version
-            ));
+            );
         }
         if !self.flags.is_empty() {
-            return Err(anyhow!("Expecting empty flags"));
+            bail!("Expecting empty flags");
         }
         Ok(())
     }

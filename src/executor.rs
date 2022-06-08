@@ -7,7 +7,7 @@ use std::{
     str::FromStr,
 };
 
-use anyhow::{anyhow, Error};
+use anyhow::{bail, Error};
 use serde::Serialize;
 use serde_json::{Map, Value};
 
@@ -90,7 +90,7 @@ impl Executor {
         for _n in 0..1 {
             let empty = input.next().unwrap()?;
             if !empty.is_empty() {
-                return Err(anyhow!("Expecting two empty lines"));
+                bail!("Expecting two empty lines");
             }
         }
         Ok(line)
@@ -122,17 +122,17 @@ impl Executor {
     ) -> Result<(), Error> {
         for (attr, _) in &required {
             if attributes.get(attr).is_none() {
-                return Err(anyhow!("Missing required attribute {}", attr));
+                bail!("Missing required attribute {}", attr);
             }
         }
         for (attr, attr_type) in required.iter().chain(optional.iter()) {
             if let Some(value) = attributes.get(attr) {
                 if !attr_type.has_type(value) {
-                    return Err(anyhow!(
+                    bail!(
                         "Attribute {} should have {:?} type",
                         attr,
                         attr_type
-                    ));
+                    );
                 }
             }
         }
@@ -144,7 +144,7 @@ impl Executor {
                     .map(|(a, _)| a)
                     .all(|a| a != key)
                 {
-                    return Err(anyhow!("Unexpected attribute {}", key));
+                    bail!("Unexpected attribute {}", key);
                 }
             }
         }
@@ -180,13 +180,13 @@ impl Executor {
             if !initialized {
                 match promise.init() {
                     ProtocolResult::Failure(e) => {
-                        return Err(anyhow!("failed to initialize promise type: {}", e));
+                        bail!("failed to initialize promise type: {}", e);
                     }
                     ProtocolResult::Error(e) => {
-                        return Err(anyhow!(
+                        bail!(
                             "failed to initialize promise type with unexpected: {}",
                             e
-                        ));
+                        );
                     }
                     ProtocolResult::Success => (),
                 }
@@ -231,7 +231,7 @@ impl Executor {
                 return Ok(());
             } else {
                 // Stop the program?
-                return Err(anyhow!("Could not parse request: {}", line));
+                bail!("Could not parse request: {}", line);
             };
         }
     }
